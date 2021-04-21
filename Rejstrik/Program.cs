@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Rejstrik
 {
@@ -16,13 +17,16 @@ namespace Rejstrik
 
     class Rejstrik
     {
-        public Dictionary<string, List<int>> Slova;
+        private Dictionary<string, List<int>> Slova = new Dictionary<string, List<int>>();
         public void VytvoreniRejstriku(string cestaCteni)
         {
             PrecteniRadku(cestaCteni);
             using (var writer = new StreamWriter(@"D:\KlonovatelneProjekty\Rejstrik\Rejstrik\Rejstrik.txt"))
             {
-                
+                foreach (var slovo in Slova)
+                {
+                    writer.WriteLine(slovo.Key + " - " + string.Join(", ",slovo.Value.Select(x => x.ToString()).ToArray()));
+                }
             }
         }
 
@@ -34,10 +38,14 @@ namespace Rejstrik
                 while (!reader.EndOfStream)
                 {
                     radek++;
-                    string[] slovaNaRadku = reader.ReadLine().Split(' ', '-','"', ',','.','?','!');
+                    string[] slovaNaRadku = reader.ReadLine().Split(' ', '-','"', ',','.','?','!','[',']','(',')','_','*','—','“','#','”',':',';');
                     for (int i = 0; i < slovaNaRadku.Length; i++)
                     {
                         string slovo = slovaNaRadku[i].ToLower();
+                        if (slovo == "" || slovo.Length < 2) 
+                        {
+                            continue;
+                        }
                         if (!Slova.ContainsKey(slovo))
                         {
                             List<int> radky = new List<int>();
